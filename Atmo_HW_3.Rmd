@@ -1,0 +1,59 @@
+---
+title: "Homework 3"
+author: "Joseph Crockett"
+date: "February 8, 2016"
+output: word_document
+---
+
+Problems:
+**4.2  
+If u = 10 ms ^−1^,v = 10 ms ^−1^,w = 0.01 ms ^−1^,and $\frac{du}{dt}$ scales as $\frac{u}{\frac{\Delta x}{u}}$, estimate each term on the right side of (4.29) at φ = 30◦ N. Let $\Delta x = 5 km$, $\Delta y = 5 km$, and $\Delta z = 1 km$. 
+
+$$ R_{e} = 6271000 km = 6271000000 m $$
+
+$$ \frac{dv}{dt} = i_{\lambda}\left(\frac{du}{dt} - \frac{uv tan \varphi}{R_{e}} + \frac{uw}{R_{e}}\right) + j_{\varphi}\left(\frac{dv}{dt} - \frac{u^{2} tan \varphi}{R_{e}} + \frac{vw}{R_{e}}\right) + k_{tau}\left(\frac{dw}{dt} - \frac{u^{2}}{R_{e}} + \frac{v^{2}}{R_{e}}\right) $$
+
+$$ \frac{du}{dt} = \frac{u}{\frac{\Delta x}{u}} = \frac{10 ms^{-1}}{\frac{5000 m}{10 ms^{-1}}} = .02 $$
+
+$$ \frac{dv}{dt} = \frac{v}{\frac{\Delta y}{v}} = \frac{10 ms^{-1}}{\frac{5000 m}{10 ms^{-1}}} = .02 $$
+
+$$ \frac{dw}{dt} = \frac{w}{\frac{\Delta z}{w}} = \frac{.01 ms^{-1}}{\frac{1000 m}{.01 ms^{-1}}} =  1 * 10^{-7} $$
+
+$$ \frac{uv tan \varphi}{R_{e}} = \frac{100 tan 30}{6271000000} =  -1.02142102e^{-7} $$
+
+$$ \frac{u^{2} tan \varphi}{R_{e}} = \frac{100 tan 30}{6271000000} = -1.02142102e^{-7} $$
+
+$$ \frac{u^{2}}{R_{e}} = \frac{100}{6271000000} = 1.56961231e^{-8} $$
+
+$$ \frac{uw}{R_{e}} = \frac{10*.01}{R_{e}} = 1.594642e^{-11} $$
+
+$$ \frac{vw}{R_{e}} = \frac{10 * .01}{R_{e}} = 1.594642e^{-11} $$
+
+$$ \frac{v^{2}}{R_{e}} = \frac{10^{2}}{6271000000} = 1.56961231e^{-8} $$
+
+These terms are approximations and the mathematics appears without error.
+
+**4.4  
+Assume a grid cell has dimension $\Delta x = 5 km$, $\Delta y = 4 km$, and $\Delta z = 0.1 km$, and assume the west, east, south, north, lower, and upper boundary scalar velocities are u~1~ = +2, u~2~ = +3, v~3~ = +1, v~4~ = −3, w~5~ = +0.03, and w~6~ = +.04 ms ^-1^, respectively. Estimated the magnitude of the divergence term of the local acceleration (v ∇v).
+
+$$ (v ∇)v = \left(u\frac{\delta u}{\delta x} + v\frac{\delta u}{\delta y} + w\frac{\delta u}{\delta z}\right) + \left(u\frac{\delta v}{\delta x} + v\frac{\delta v}{\delta y} + w\frac{\delta v}{\delta z}\right) + \left(u\frac{\delta w}{\delta x} + v\frac{\delta w}{\delta y} + w\frac{\delta w}{\delta z}\right) $$
+
+$$ (v ∇)v = \left(\frac{3+2}{2} \frac{3-2}{5000} + \frac{-3+1}{2} \frac{3-2}{4000} + \frac{.03+.04}{2} \frac{3-2}{100}\right) + \left(\frac{3+2}{2} \frac{-3-1}{5000} + \frac{-3+1}{2} \frac{-3-1}{4000} + \frac{.03+.04}{2} \frac{-3-1}{100}\right) + \left(\frac{3+2}{2} \frac{.04 - .03}{5000} + \frac{-3+1}{2} \frac{.04 - .03}{4000} + \frac{.03+.04}{2} \frac{.04 - .03}{100}\right) $$
+
+$$ (v ∇)v = -0.003289 m s^{-2}$$
+
+I would suppose that a negative magnitude isn't possible, though with the directions of the wind velocities, it may be.  The magnitude is comparable to horizontal local accelerations of approximately 10^-4^ ms^-2^
+
+**4.9  
+Calculate the viscous acceleration force per unit mass when the air is dry, T = 298K, pa = 995 hPa, and u = 1.0 ms ^−1^  at 10 cm above the ground and 0.7 m s^−1^ at 5 cm above the ground.
+
+$$ R` = 2.8705 m3 hPa kg K $$
+
+$$ p_{a} = \frac{p_{a}}{R_{m}T}= \frac{995}{2.8705*298} = 1.163186 $$
+
+$$ n_{a} = 1.8325 * 10^{-5}\left(\frac{416.16}{T+120}\right)\left(\frac{T}{296.16}\right)^{1.5} = 1.8325 * 10^{-5}\left(\frac{416.16}{298+120}\right)\left(\frac{298}{296.16}\right)^{1.5} = 0.00001841462 $$
+
+$$ \frac{F_{v,zx}}{M_{a}} = \frac{n_{a}}{p_{a}} * \frac{1}{(z_{2}-z_{1})/2}  *\left(\frac{u_{2}-u_{1}}{z_{2} - z_{1}}\right) = \frac{0.00001841462}{1.163186} * \frac{1}{(0.1 - 0.05)/2}  *\left(\frac{1.0 - 0.7}{0.1 - 0.05}\right) = 0.003799486 $$
+
+The viscous force term compares appropriately to example terms in the text for near-ground forces.
+

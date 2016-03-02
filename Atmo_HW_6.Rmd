@@ -1,0 +1,6 @@
+---
+title: "Atmo_HW_6"
+author: "Joseph Crockett"
+date: "March 2, 2016"
+output: html_document
+---

@@ -1,0 +1,169 @@
+---
+title: 'Fundamentals of Atmospheric Modeling: Homework 1'
+author: 'Joseph Crockett'
+output: pdf_document
+
+---
+
+2.4, 2.7, 2.19, 2.21
+
+2.4
+If T = 268 K and p~d~ = 700 hPa, respectively, find p~v,s~ in hPa, and find the corresponding mixing ratio of water vapor in percent, ppmm, and ppmv.
+
+  $$ T = 268K $$
+  $$ p_{d} = 700 hPa $$
+  $$ \omega_{v,s} = \frac{\epsilon * p_{v,s}}{p_{d}} $$
+  $$ p_{v,s} = 6.112 \exp( 6816 * (\frac{1}{273.15} - \frac {1}{T}) + 5.1309 \ln(\frac{273.15}{T})) $$
+  
+```{r}
+  Et<- .622
+  Bc<- 1.380658 * (10^-19) #boltzman constant
+```
+```{r}
+  satpreswtr<-function(x){
+  Pvs <- 6.112*exp((6816 *( (1/273.15) - (1/x) )) + (5.1309 * log(273.15/x)))  #x is temperature (K)
+ #print(Pvs)
+}
+```
+```{r}
+satmasmxwtr<- function(x,y){
+	Wvs<- (Et * x)/y # x is pvs, y is pd
+	Wvsper <- Wvs*(100)
+	Wvsppmm<- Wvs*(10^6) #
+	Wvsppmv<- (Wvs/Et)* (10^6)
+	print(paste("pvs = ", x, "hPa", sep = " "))
+	print(paste("Wvs = ", Wvs, sep = " "))
+	print(paste("Wvs(percent) =", Wvsper, "%", sep=" "))
+	print(paste("Wvs(ppmm) =", Wvsppmm, "ppmm", sep=" "))
+	print(paste("Wvs(ppmv) =", Wvsppmv, "ppmv", sep=" "))
+	}
+	satmasmxwtr(satpreswtr(268), 700)
+	
+```
+  
+  The results reflect that saturation vapor pressure is lower given lower temperature: i.e. colder air is drier
+
+2.7
+Find the virtual temperature when N~A~ = 2.1 × 10^19^ molec. cm^3^, T = 295 K, and f~r~ = 92%.
+
+  $$ T_{v} = T (1 + .608 q_{v}) $$
+  $$ q_{v} = \frac{\epsilon * p_{v}}{p_{d} + \epsilon *p_{v}} $$
+  $$ p_{a} = N_{a} * K_{b} * T $$
+  $$ p_{v} = \frac{f_{r}*p_{v,s}}{100} $$
+  $$ p_{d} = p_{a} - p_{v,s} $$
+  $$ p_{v,s} = 6.112 \exp( 6816 * (\frac{1}{273.15} - \frac {1}{T}) + 5.1309 \ln(\frac{273.15}{T})) $$
+  
+
+```{r}
+Naa<- 2.1 * (10^19)
+```
+```{r}
+virtemp<- function(x, y){
+	Tv<- x*(1+(.608 *y)) # x is temp (k), y is qv
+	}
+```
+```{r}
+quanv<- function(x,y){
+	qv<- (Et*x)/(y + Et*x) #x is Pv, y is Pd
+	}
+```
+```{r}
+Presa<- function(x,y){
+	Pa<- x*y*Bc #x is Temp(K) y is Na
+	}
+```
+```{r}
+hulRel<- function(x,y){
+	Pv<- (x*y)/100 #x is fr, y is pvs
+	}
+```
+```{r}
+Pden<- function(x, y){
+	Pd<- x-y # x is Pa, y is Pvs
+	}
+```
+```{r}
+Pa<- Presa(295,Naa)
+Pvs<- satpreswtr(295)
+Pv<-hulRel(92,Pvs)
+Pd<-Pden(Pa,Pvs)
+Qv<- quanv(Pv, Pd)
+Tv<- virtemp(295, Qv)
+print(paste("Virtual Temperature =",Tv, "K", sep = " "))
+
+```
+
+A high humidity points to high water content of the air, reducing temperature relative to dry air.  Thus, the finding that the virtual temperature is higher than the given temperature makes sense.
+
+
+2.19
+If T~D~ = 279 K, T = 281 K, and p~d~ = 930 hPa, calculate f~r~, p~v~,  $\omega$~v~ and $\omega$~v,s~.
+
+$$ f_{r} = 100 * \frac{p_{v}}{p_{v,s}} $$
+$$ p_{v} = \exp(\frac{19.48T_{D} - 4880.357}{T_{D}-29.66} $$
+$$ \omega_{v,s} = \frac{\epsilon * p_{v,s}}{p_{d}} $$
+$$ \omega_{v} = \frac{\epsilon * p_{v}}{p_{d}} $$
+
+```{r}
+Dwpt<- function(x){
+	Td<- ( 4880.357 - 29.66*log(x))/(19.48 - log(x)) #x is Pv
+	#print(Td)
+	}
+```
+```{r}
+Presv<- function(x){
+	Pv<-exp(((19.48*x)-4880.357)/(x-29.66)) #x= Dewpoint Temperature (K)
+	}
+```
+```{r}
+Relhum<- function(x, y){
+	fr<- 100 * (x/y)  #x is Wv or Pv, y is Wvs or Pvs
+	print(paste("Relative Humitity = ",fr,"%",sep=" ")) 
+	print(paste("Wv = ",x,"hPa", sep=" ")) #Wv
+	print(paste("Wvs = ",y, "hPa", sep=" ")) #Wvs
+	}
+```	
+```{r}
+satmasmxwtr<- function(x,y){
+	Wvs<- (Et * x)/y # x is pvs, y is pd
+	#print(paste("Wvs = ", Wvs, sep = " "))
+}
+```
+```{r}
+  print(paste("Pv =",Presv(279), "hPa", sep= " "))
+  Relhum(satmasmxwtr(Presv(279), 930), satmasmxwtr(satpreswtr(281), 930))
+```
+This follows, as the current temperature is close to the dew point, but still above condensation level.  Thus, the humidity is high, but not 100%
+
+2.21
+Calculate the potential virtual temperature of dry air when (a) p~a~ = 900 hPa and T= 280 K; (b) p~a~ = 850 hPa and T= 278 K. Is the air parcel between 900 and 850 hPa stable, unstable, or neutral with respect to unsaturated air ?
+
+Assumption: The air parcels in question are dry, thus T~v~ = T
+$$ \theta_{v}= T_{v}* \frac{1000 hPa}{p_{a}}^\kappa $$
+
+$$ \kappa = .286 $$
+
+```{r}
+  k<-.286
+  theta<-function(x,y){
+    x*((1000/y)^k) #x is Tv, y is pa
+  }
+```
+```{r}
+  t1<-theta(280,900)
+  t2<-theta(278,850)
+  print(paste("(a) = ",t1, "K", sep= " "))
+  print(paste("(b) = ",t2, "K", sep= " "))
+```
+
+if $\frac{\delta*\theta}{\delta*z} <0$, then unsaturated unstable  
+if $\frac{\delta*\theta}{\delta*z} =0$, then unsaturated neutral  
+if $\frac{\delta*\theta}{\delta*z} >0$, then unsaturated stable  
+
+From Appendix B1, at p~a~ = 900 hPa and T= 280 K, z = 1 km, and at p~a~ = 850 hPa and T= 278 K, z = 1.5 km
+
+```{r}
+  print((t1-t2)/(1-1.5))
+```
+
+The air parcel is stable.  This follows, as potential virtual temperature stays relatively constant over the increase of altitude.

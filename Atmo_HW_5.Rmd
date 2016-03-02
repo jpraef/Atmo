@@ -1,0 +1,85 @@
+---
+title: "Homework 5"
+author: "Joseph Crockett"
+date: "February 24, 2016"
+output: word_document
+---
+
+5.8
+```{r warning = F, message = F}
+
+airy <- function(j, z, n){ #number of nodes (j), timestep length (z), number of time steps (n)
+#This code estimates node i in the current time step using Node i, i -1 and i + 1 from the previous time step.
+#Note: if you run the entire code, it will install the ggplot2 and reshape packages if they are not already installed.
+#If you would prefer this to not happen, remove the function "ndpkg" towards the end of the code.
+air_frm <- data.frame(N0 = 1:j)
+for (i in 1:(n+1)){
+  air_frm[,i] <- NA
+}
+#Initial Gas Concentrations at Boundaries
+for (i in 1:j){
+  air_frm[i,1] <- (10^12)*exp((-((i-50)^2))/8)
+}
+
+#Node 1 is west, node 100 is east.  Node 100 is next to node 1.
+
+
+
+#Time step 1
+for (tm in 1:n){
+
+  for (i in 1:j){
+ 
+     u <- 500 #cm/s
+     h <- z #seconds
+     dx <- 500000 #cm
+  
+    #finding the nodes
+    Nit_h <- air_frm[i,1]
+    Nit_hb <- ifelse(i == 1, air_frm[j, tm], air_frm[i-1,tm]) #west boundary condition
+    Nit_ha <- ifelse(i == j, air_frm[1,tm], air_frm[i+1,tm])
+    k1 <- h * (- ( u * Nit_ha - u * Nit_hb) / (2 * dx))
+    k2 <- h * (- ( u * (Nit_ha + (k1 / 2)) - u * (Nit_hb + (k1 / 2)) ) / (2 * dx))
+    k3 <- h * (- ( u * (Nit_ha + (k2 / 2)) - u * (Nit_hb + (k2 / 2)) ) / (2 * dx))
+    k4 <- h * (- ( u * (Nit_ha + k3) - u * (Nit_hb + k3) ) / (2 * dx))               
+
+    air_frm[i,tm+1] <- Nit_h + (k1 / 6) + (k2 / 3) + (k3 / 3) + (k4 / 6)
+  }
+  
+}
+print(head(air_frm))
+
+#adding r packages if necessary
+ndpkg <- function(p){
+  ifelse(is.element(p,installed.packages()[,1]),require(p,character.only = T), install.packages(p, dep = T))
+}
+sapply(c("ggplot2", "reshape", "gridExtra", "dplyr"), ndpkg)
+
+#plotting results.  
+air_frm_m <- melt(air_frm)
+air_frm_m$num <- rep(1:j, (n+1))
+return(air_frm_m)
+
+
+}
+
+
+t1 <- as.data.frame(airy(100,5,10))
+t2 <-as.data.frame(airy(100,.1,10))
+
+t3 <- as.data.frame(t2$value - t1$value)
+t3$num <- t1$num
+t3$variable <- t1$variable
+colnames(t3) <- c("value", "num", "variable")
+
+g1 <- ggplot(t1) + geom_line(aes(x = num, y = value, color = variable)) + theme(legend.position = "none")+ labs(title = "Gas Concentrations, 100, 5, 10", x = "Nodes", y = "N, molec/cm3")
+
+g3 <- ggplot(t2) + geom_line(aes(x = num, y = value, color = variable)) + theme(legend.position = "none") + labs(title = "Gas Concentrations, 100, .01, 10", x = "Nodes", y = "N, molec/cm3")
+
+
+g5 <- ggplot(t3) + geom_line(aes(x = num, y = value, color = variable)) + theme(legend.position = "none")+ labs(title = "Gas Concentrations Differences", x = "Nodes", y = "N, molec/cm3")
+
+
+grid.arrange(g1, g3, g5, nrow = 3)
+```
+

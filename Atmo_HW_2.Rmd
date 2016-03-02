@@ -1,0 +1,242 @@
+---
+title: "Homework 2"
+author: "Joseph Crockett"
+date: "January 30, 2016"
+output: pdf_document
+---
+```{r global_options, include = F}
+library(knitr)
+opts_chunk$set(tidy=T, tidy.opts=list(width.cutoff=60))
+```
+### Ch3: _3.3, 3.6, 3.8_
+
+3.3
+What is the purpose of Reynolds averaging?  
+Because modelling atmospheric interactions at the scale of real atmospheric motions is unrealistic, accounting for eddies and turbulence is difficult.  Reynolds averaging allows for the creation of models that account for subgrid-scale disturbances without needing to model turbulence specifically or resort to infinitesimally small spatial and temporal resolution.
+
+3.6
+A grid cell has dimensions $\Delta$x = 5km, $\Delta$y = 4km,and $\Delta$z = 0.1km .  
+
+(a)
+Assume the gas concentration and scalar velocity at the west boundary of the cell are *N*~1~ = 1 x 10^11^ molec. cm^-3^ and *u*~1~ = +7 m s^-1^ and those at the east boundary of the cell are *N*~2~ = 5 x 10^11^ molec. cm^-3^ and *u*~2~ = +8 m s^-1^, respectively. (i) Estimate *N* at cell center after 60 s if the initial *N* is the average of the two boundary *N*-values and boundary parameters remain constant. (ii) Calculate the time after the start at which  *N* at the cell center becomes zero.
+
+$$ \frac{\Delta N}{\Delta t} = - \left(\frac{u_{2} N_{2} - u_{1} N_{1}}{\Delta x}\right) $$
+
+```{r} 
+
+#function to find gas concentration given windspeed and number concentrion from one direction
+gs_conc_x <- function(N_1 = 0, N_2 = 0, u_1 = 0,
+                      u_2 = 0, x = 1, t){
+  N_adj <- -1*(((u_1 * N_1) - (u_2 * N_2)) / (x))
+  N_init <- (N_2 + N_1) / 2
+  N_conc <- N_init - (N_adj*t)
+}
+
+
+#N_1 = 1 x 10^11^ molec. cm^-3^
+#N_2 = 5 x 10^11^ molec. cm^-3^
+#u_1 = +7 m s^-1^ = 700 cm s^-1^
+#u_2 = +8 m s^-1^ = 800 cm s^-1^
+#x = 5km = 500000 cm
+#t = 60s
+
+N_x <- gs_conc_x(N_1 = 1*(10^11), N_2 = 5*(10^11),
+          u_1 = 700, u_2 = 800, x = 500000, t = 60)
+
+print(paste("The gas concentration N~x~ is", N_x, "molec. cm^-3", sep = " "))
+```
+
+
+```{r}
+
+#Function to find time (seconds) as number concentration from one direction approaches zero
+gs_conc_x_t <- function(N_1 = 0, N_2 = 0, u_1 = 0,
+                        u_2 = 0, x = 1){
+  N_init <- ((N_2 + N_1)/ 2)
+  N_adj <- -1*(((u_1 * N_1) - (u_2 * N_2)) / (x))
+  t0 <- N_init / N_adj
+}
+
+
+T_x <- gs_conc_x_t(N_1 = 1*(10^11), N_2 = 5*(10^11),
+            u_1 = 700, u_2 = 800, x = 500000)
+
+print(paste("Time when N~x~ approaches 0 is", T_x, "seconds", sep = " "))
+```
+
+The answers are consistant with the variables: the gas concentration within the box is increasing, thus time to zero concentration will be longer than if concentration were stable.
+
+(b)
+Assume the gas concentration and scalar velocity at the south boundary of the cell are *N*~3~ = 1 x 10^11^ molec. cm^-3^ and *v*~3~ = -2 m s^-1^ and those at the north boundary of the cell are *N*~4~ = 7 x 10^11^ molec. cm^-3^ and *v*~4~ = +1 m s^-1^, respectively. (i) Calculate *N* at cell center after 60 s and (ii) the time after the start at which  *N* at the cell center becomes zero. Assume fluxes operate in four directions and the initial *N* at the center of the cell is the average of all four grid-boundary *N*-values.
+
+$$ \Delta N \Delta x \Delta y \Delta z =  u_{1} N_{1} v_{1} N_{3} w_{1} N_{5} \Delta t - u_{2} N_{2} v_{2} N_{4} w_{2} N_{6} \Delta t $$
+
+$$ \frac{\Delta N}{\Delta t} = -\left(\frac{u_{1} N_{1} v_{1} N_{3} w_{1} N_{5} - u_{2} N_{2} v_{2} N_{4} w_{2} N_{6}}{\Delta x \Delta y \Delta z}\right) $$
+
+```{r} 
+#function to find gas concentration given windspeed and number concentrion from two directions
+gs_conc_xy <- function(N_1 = 0, N_2 = 0, N_3 = 0,
+                       N_4 = 0, u_1 = 0, u_2 = 0,
+                       v_1 = 0, v_2 = 0, x = 1,
+                       y =1, t){
+  N_adj <- -1*(((u_1 * N_1 * v_1 * N_3) - (u_2 * N_2 * v_2 * N_4)) / (x*y))
+  N_init <- (N_4 + N_3 + N_2 + N_1) / 4
+  N_conc <- N_init - (N_adj*t)
+}
+
+#N_1 = 1 x 10^11^ molec. cm^-3^  
+#N_2 = 5 x 10^11^ molec. cm^-3^  
+#N_3 = 1 x 10^11^ molec. cm^-3^  
+#N_4 = 7 x 10^11^ molec. cm^-3^  
+#u_1 = +7 m s^-1^ = +700 cm s^-1^  
+#u_2 = +8 m s^-1^ = +800 cm s^-1^  
+#v_3 = -2 m s^-1^ = -200 cm s^-1^  
+#v_4 = +1 m s^-1^ = +100 cm s^-1^  
+#x = 5km = 500000 cm  
+#y = 4km = 400000 cm  
+#z = 0.1km = 10000 cm  
+#t = 60s  
+
+N_xy <- gs_conc_xy(N_1 = 1*(10^11), N_2 = 5*(10^11),
+           N_3 = 1*(10^11), N_4 = 7*(10^11),
+           u_1 = 700, u_2 = 800,v_1 = -200,
+           v_2 = 100, x = 500000, y = 400000,
+           t = 60)
+
+print(paste("The gas concentration N~xy~ is", N_xy, "molec. cm^-3", sep = " "))
+
+```
+
+
+
+```{r}
+
+#Function to find time (seconds) as number concentration from one direction approaches zero
+gs_conc_xy_t <- function(N_1, N_2, N_3, N_4, u_1, u_2,
+                         v_1, v_2, x, y){
+  
+  N_adj <- -1* (((u_1 * N_1 * v_1 * N_3) - (u_2 * N_2 * v_2 * N_4)) / (x*y))
+  N_init <- (N_4 + N_3 + N_2 + N_1) / 4
+  t0 <- N_init / N_adj
+  }
+
+T_xy <- gs_conc_xy_t(N_1 = 1*(10^11), N_2 = 5*(10^11), N_3 = 1*(10^11), N_4 = 7*(10^11),u_1 = 700, u_2 = 800, v_1 = -200, v_2 = 100, x = 500000, y = 400000)
+
+print(paste("Time when N~xy~ approaches 0 is", T_xy, "seconds", sep = " "))
+```
+
+The answers for parts i and ii are consistant with the given variables: The majority of the air is leaving the constructed box, thus the concentration inside the box is smaller than when it began, and the time to zero concentration is very quick.
+
+
+(c)
+Convert the gas number concentrations from part (a) to moist-air mass mixing ratios, assuming that the gas is ozone, T~v~ = 298 K and p~a~ = 1013 hPa.
+
+$$ p_{a} = \rho_{a} R' T_{v} $$
+$$ \rho_{a} = \frac{p_{a}}{R' T_{v}} $$
+$$ N = \frac{A \rho_{a} q}{m} $$
+$$ q = \frac{N m}{A \rho_{a}} $$
+$$ A = 6.0221367 x 10^{23} molec mol^{-1} $$
+$$ T_{v} = 298K $$
+$$ p_{a} = 1013hPa $$
+$$ m_{ozone} = 48.0 g mol ^{-1} $$
+$$ R' = 2870.3 cm^{3} hPa g^{-1} K^{-1} $$
+$$ N_{a1} = 1 x 10^{11} molec. cm^{-3} $$
+$$ N_{a2} = 5 x 10^{11} molec. cm^{-3} $$
+
+```{r}
+#Function to determing moist air mixing ratio based on pa, Tv, and Na
+#Units are hPa, K, and molec/cm^3
+mst_ar_mix <- function(N, p_a, T_v){
+  rhoa <- p_a / (2870.3 * T_v)
+  q <- (N * 48) / ((6.0221367*(10^23)) * rhoa)
+  return(q)
+}
+```
+```{r}
+p_a1 <- 1013 #hPa
+T_v1 <- 298 #K
+N_a1 <- 1*(10^11) #molec/cm^3
+N_a2 <- 5*(10^11) #molec/cm^3
+
+q_parta <- mst_ar_mix(N_a1, p_a1, T_v1)
+q_partb <- mst_ar_mix(N_a2, p_a1, T_v1)
+
+print(paste("The moist air mixing ratio for part a is", q_parta, "kg kg^-1", sep = " "))  
+print(paste("The moist air mixing ratio for part b is", q_partb, "kg kg^-1", sep = " "))
+```
+
+As with the number concentration of ozone in part (a), the ratio of dry to moist air coming into the box is less than the ratio of dry to moist air coming out of the box.  In addition, our results indicate that we almost have complete moist air going into the box, but some ozone is added to the mixture leaving the box.
+
+(d)
+Re-solve parts (a) (i) and (a) (ii) with (3.26) using moist-air mass mixing ratios instead of number concentration units.  Assume the west-east velocity for this question is an average of the grid-cell boundary velocities. Convert the mass mixing ratio from the 60 s case back to number concentration units.  How does the result compare with that found in part (a) (i)? If it differs, why does it differ?
+
+$$ \frac{dq}{dt} = -u\frac{dq}{dx} $$
+```{r}
+ratio_q <- function(q_1 = 0, q_2 = 0, u_1 = 0,
+                        u_2 = 0, x = 1, t = 60){
+  q_init <- ((q_2 + q_1)/ 2)
+  q_adj <- -1*(((u_1 * q_1) - (u_2 * q_2)) / (x))
+  t0 <- q_init - (q_adj*t)
+  }
+```
+```{r}
+q_mid <- ratio_q(q_1 = q_parta, q_2 = q_partb,u_1 = 700, u_2 = 800, x = 500000, t = 60)
+
+print(paste("The moist air mixing ratio is", q_mid, "kg kg^-1", sep = " "))
+```
+
+```{r}
+#conversion back to number concentration units
+numb <- function(q){
+  num <- ((6.0221367*(10^23))*(1013 / (2870.3 * 298))*q) / 48
+  return(num)
+}
+
+print(paste("The converted number concentration units are ", numb(q_mid), "molec. cm^-3", sep = " " ))
+```
+The result found in part a and d do not differ, most likely because the same formulas were used to find the ratio and number concentration values in the center of the box.
+
+```{r}
+ratio_q_t <- function(q_1 = 0, q_2 = 0, u_1 = 0,
+                        u_2 = 0, x = 1){
+  q_init <- ((q_2 + q_1)/ 2)
+  q_adj <- -1*(((u_1 * q_1) - (u_2 * q_2)) / (x))
+  t0 <- q_init / q_adj
+}
+
+q_mid_t <- ratio_q_t(q_1 = q_parta, q_2 = q_partb,u_1 = 700, u_2 = 800, x = 500000)
+
+
+print(paste("The moist air mixing ratio at t0 is", q_mid_t, "kg kg^-1", sep = " "))
+
+```
+3.8
+Assume that grid-cell size, boundary conditions, and *N* are initially the same as in Problem 3.6(a). Write a computer script to calculate the final *N* at the grid-cell center after a time step *h*. After each time step, set the east-boundary gas concentration (*N*~2~) equal to the final concentration at the center of the cell.  Set *h* = 3 s, and run the program for a simulation period of one hour. Plot the grid center concentration versus time.
+
+```{r}
+
+# The function does not change; what will is the initial N, so lets replace the values that changed in part a with the given values to simplify things.
+
+gs_conc_x <- function(N_2){
+  N_adj <- -1*(700*(1*(10^11)) - (800*N_2)) / 500000
+   N_init <- (N_2 + (1*(10^11)) ) / 2
+                          N_conc <- N_init - (N_adj*3)
+}
+
+#Next, lets make a dataframe
+atmo <- data.frame(c(1:1200))
+atmo[,2]<-NA
+atmo[,1]<-NA
+colnames(atmo) <- c("N_2", "N_conc")
+atmo[1,1] <- 5 * (10^11)
+
+#And finally, 1200 3 sec steps in an hour
+for (i in (1:1200)){
+ atmo[i,2] <- gs_conc_x(atmo[i,1])
+ atmo[i+1,1] <- atmo[i,2]
+}
+
+plot(atmo[1:1200,2], t='l', main = "Number concentration, 3 sec time step", xlab = "Timestep", ylab = "Number Concentration, molec. cm^-3")
+```
+
+The plot shows a quick depreciation to close to 1 x 10^11 concentration, which seems likely as the gas leaving and gas entering equalize exponentially.

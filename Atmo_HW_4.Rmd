@@ -1,0 +1,92 @@
+---
+title: 'Atmospheric Modeling, Homework #4'
+author: "Joseph Crockett"
+date: "February 17, 2016"
+output: word_document
+---
+
+##5.1b  
+Given:
+```{r}
+dlx = 5000#m$,   
+dly = 5000#m$,    
+dlpa = -10# hPa$,  
+u1 = -2 #ms^{-1}$,   
+u2 = 1 #ms^{-1}$,   
+v3 = 1 #ms^{-1}$,   
+v4 = -2 #ms^{-1}$,   
+w5 = 0.3 #ms^{-1}$,  
+tav = 284#K$,  
+Pa = 980 #hPa$,  
+grv = 9.80665 #m s^{-2}$,  
+rg = 287.04 #m^{2}s^{-2}K^{-1}$,  
+q1 = .004 #kg kg^{-1}$,  
+q2 = .005 #kg kg^{-1}$,   
+q3 = .003 #kg kg^{-1}$,  
+q4 = .004 #kg kg^{-1}$,  
+q5 = .0045 #kg kg^{-1}$,  
+q6 = .0055 #kg kg^{-1}$
+hh = 500 #s
+```
+$$ w_{p5} = -w_{5} \rho_{a}g $$
+
+```{r} 
+wp5 <- -w5*(Pa/(tav*rg))*grv
+```
+
+$$ w_{p6} = w_{p5} - \Delta p_{a} * \left( \frac{u_{2} - u_{1}}{\Delta x} + \frac{v_{4} - u_{3}}{\Delta y} \right) $$
+
+```{r}
+wp6 <- wp5 - dlpa * (((u2-u1)/dlx) + ((v4-v3)/dly))
+```
+
+$$ \frac{q_{t} - q_{t-h}}{h} = - \left(\frac{u_{2}+u_{1}}{2}\frac{q_{2}-q_{1}}{\Delta x} +\frac{u_{4}+v_{3}}{2}\frac{q_{4}-q_{3}}{\Delta y} + \frac{w_{p6}+w_{p5}}{2}\frac{q_{6}-q_{5}}{\Delta p_{a}}\right) $$
+
+```{r}
+qtt <- hh * -( ( (u2+u1)/2 ) * ( (q2-q1)/dlx ) + ( (v4+v3)/2 ) * ((q4-q3)/dly ) + ( (wp6+wp5)/2 ) * ( (q6-q5)/dlpa) )
+
+```
+
+The change in q after 500 seconds is `r qtt ` kg kg^-1^ . This seems likely, as the windspeeds indicate that more air is exiting the grid cell than entering.
+
+##5.3a  
+Given:
+
+```{r}
+dlxa = 4000#m$,   
+dlya = 5000#m$,    
+dlo = .05  
+u1a = -2 #ms^{-1}$, 
+pia1 = 748 #hPa
+u2a = 1 #ms^{-1}$,
+pia2 = 752 #hPa
+v3a = -1 #ms^{-1}$,
+pia3 = 749 #hPa
+v4a = -2 #ms^{-1}$,
+pia4 = 753 #hPa
+w5a = 0.02 #ms^{-1}$,  
+tava = 298#K$,  
+Patop = 250 #hPa$,
+obot = .9
+grv = 9.80665 #m s^{-2}$,  
+rg = 287.04 #m^{2}s^{-2}K^{-1}$,  
+
+```
+
+$$ \sigma_{5} = -w_{5}\rho_{a}g / \pi{a} $$
+
+```{r}
+pia <- (mean(pia1,pia2,pia3,pia4))
+
+
+o5  <- (-w5a*(Patop/(tava*rg))*grv) / pia
+
+```
+
+$$ \pi_{a}\frac{\delta u}{\delta x} + \pi_{a}\frac{\delta v}{\delta y} + \pi_{a}\frac{\delta \sigma}{\delta \sigma} = 0 $$
+$$ \left(\frac{\pi_{a1} + \pi_{a2} +\pi_{a3} + \pi_{a4}}{4}\right) * \left(\frac{u_{2}-u_{1}}{\Delta x}\right) + \left(\frac{\pi_{a1} + \pi_{a2} +\pi_{a3} + \pi_{a4}}{4}\right) * \left(\frac{v_{4}-v_{3}}{\Delta y}\right) + \left(\frac{\pi_{a1} + \pi_{a2} +\pi_{a3} + \pi_{a4}}{4}\right) * \left(\frac{\sigma_{6}-\sigma_{5}}{\Delta \sigma}\right) = 0 $$
+
+```{r}
+o6 <- -dlo * ((pia * (u2a - u1a)/dlxa) + (pia * (v4a - v3a)/dlya))/pia + o5
+```
+The sigma-pressure coordinate vertical scalar velocity at the top of the cell is `r o6 `.  I am fairly certain that I missed a step somewhere in this problem.  I suspect that I should have first found w6, then convert that to vertical scalar velocity.  It is also possible that I incorrectly expanded the dot product in the continuity equation for air.

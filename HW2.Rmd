@@ -1,0 +1,86 @@
+---
+title: "hw"
+author: "Joseph Crockett"
+date: "January 30, 2016"
+output: pdf_document
+---
+
+### Ch3: _3.3, 3.6, 3.8_
+
+3.3
+What is the purpose of Reynolds averaging?
+Reynolds averaging allows for the creation of models that account for subgrid-scale disturbances without needing to model turbulence specifically.
+
+3.6
+A grid cell has dimensions $\Delta$x = 5km, $\Delta$y = 4km,and $\Delta$z = 0.1km .  
+
+(a)
+Assume the gas concentration and scalar velocity at the west boundary of the cell are *N*~1~ = 1 x 10^11^ molec. cm^-3^ and *u*~1~ = +7 m s^-1^ and those at the east boundary of the cell are *N*~2~ = 5 x 10^11^ molec. cm^-3^ and *u*~2~ = +8 m s^-1^, respectively. (i) Estimate *N* at cell center after 60 s if the initial *N* is the average of the two boundary *N*-values and boundary parameters remain constant. (ii) Calculate the time after the start at which  *N* at the cell center becomes zero.
+
+$$ \frac{\Delta N}{\Delta t} = - \left(\frac{u_{2} N_{2} - u_{1} N_{1}}{\Delta x}\right) $$
+
+```{r} 
+gsconc <- function(N_1, N_2, u_1, u_2, x, t){
+  N_adj<- -1 *t * (((u_2*N_2) - (u_1*N_1))/x)
+  N_init<- (N_2 + N_2)/2
+  N_tmp<- N_init + N_adj
+  print(N_init)
+  print(N_adj)
+  print(N_tmp)
+}
+
+#N_1 = 1 x 10^11^ molec. cm^-3^
+#N_2 = 5 x 10^11^ molec. cm^-3^
+#u_1 = +7 m s^-1^ = 700 cm s^-1^
+#u_2 = +8 m s^-1^ = 800 cm s^-1^
+#x = 5km = 500000 cm
+#t = 60s
+
+gsconc((10^11), 5*(10^11), 700, 800, 500000, 60)
+```
+```{r}
+gsconc_t <- function(N_1, N_2, u_1, u_2, x, N){
+  t_tmp<- (-1* N )/ (((u_2*N_2) - (u_1*N_1))/x)
+  return(t_tmp)
+}
+
+gsconc_t((10^11), 5*(10^11), 700, 800, 500000, 0.000000000001)
+```
+
+(b)
+Assume the gas concentration and scalar velocity at the south boundary of the cell are *N*~3~ = 1 x 10^11^ molec. cm^-3^ and *v*~3~ = -2 m s^-1^ and those at the north boundary of the cell are *N*~4~ = 7 x 10^11^ molec. cm^-3^ and *v*~4~ = +1 m s^-1^, respectively. (i) Calculate *N* at cell center after 60 s and (ii) the time after the start at which  *N* at the cell center becomes zero. Assume fluxes operate in four directions and the initial *N* at the center of the cell is the average of all four grid-boundary *N*-values.
+
+$$ \Delta N *\Delta x *\Delta y *\Delta z = 
+```{r} 
+gsconc <- function(N_1, N_2, u_1, u_2, x, t){
+  N_adj<- -1 *t * (((u_2*N_2) - (u_1*N_1))/x)
+  N_init<- (N_2 + N_2)/2
+  N_tmp<- N_init + N_adj
+  print(N_init)
+  print(N_adj)
+  print(N_tmp)
+}
+
+#N_1 = 1 x 10^11^ molec. cm^-3^
+#N_2 = 5 x 10^11^ molec. cm^-3^
+#N_3 = 1 x 10^11^ molec. cm^-3^
+#N_4 = 7 x 10^11^ molec. cm^-3^
+#u_1 = +7 m s^-1^ = +700 cm s^-1^
+#u_2 = +8 m s^-1^ = +800 cm s^-1^
+#v_3 = -2 m s^-1^ = -200 cm s^-1^
+#v_4 = +1 m s^-1^ = +100 cm s^-1^
+#x = 5km = 500000 cm
+#t = 60s
+
+gsconc((10^11), 5*(10^11), 700, 800, 500000, 60)
+```
+
+(c)
+Convert the gas number concentrations from part (a) to moist-air mass mixing rations, assuming that the gas is ozone, T~v~ = 298 K and p~a~ = 1013 hPa.
+
+(d)
+Re-solve parts (a) (i) and (a) (ii) with (3.26) using moist-air mass mixing ratios instead of number concentration units.  Assume the west-east velocity for this question is an average of the grid-cell boundary velocities. Convert the mass misixing ratio from the 60 s case back to number concentration units.  How does the result compare with that found in part (a) (i)? If it differs, why does it differ?
+
+3.8
+Assume that grid-cell size, boundary conditions, and *N* are initially the same as in Problem 3.6(a). Write a computer script to calculate the final *N* at the grid-cell center after a time step *h*. After each time step, set the east-boundary gas concentration (*N*~2~) equal to the final concentration at the center of the cell.  Set *h* = 3 s, and run the program for a simulation period of one hour. Plot the grid center concentration versus time.
+
