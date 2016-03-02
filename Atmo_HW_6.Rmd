@@ -62,9 +62,12 @@ q_cen_t <- function(h){
  return(init + tme*(fst + lst))
 }
 
-q_cen_t(h = (5*60*1))
+a72<-round(q_cen_t(h = (5*60*1)), digits = 4)
 
 ```
+The moist air mixing ratio of say, boron gas in the atmosphere given dry air, no eddy diffusion, and the values in the code chunk 1 after 1 time step of 5 minutes is `r a72` kg kg^-1^.  Initially I thought this high, given that the initial value of q was `r q_cen_h` kg kg ^-1^, but it is possible as the incoming wind and pressure values generally exceed the exiting values.
+
+
 7.2b
 ```{r}
 theta_wst_h <- 297 #k
@@ -91,6 +94,10 @@ theta_cen_t <- function(h){
  return(init + tme*(fst + lst))
 }
 
-theta_cen_t(h = (30*60*1))  
+b72 <- theta_cen_t(h = (30*60*1))  
 
 ```
+
+The virtual temperature in the grid cell given dry air, no eddy diffusion, and the values in the code chunk 1 after 1 time step of 30 minutes is `r b72` K.  Although I do not think there is anything wrong with my code, this seems high.  However, given a 30 minute time step, it may be possible.
+
+7.*1
