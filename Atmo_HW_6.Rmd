@@ -54,10 +54,10 @@ G_sth_h <- pi_sth_h * v_sth_h * Re * cos(w) * del_l
 q_cen_t <- function(h){
   init <- ((pi_cen_h * q_cen_h)/ pi_cen)  
    tme <- (h / (pi_cen * Re^2 * cos(w) * del_l * del_w)) 
-   fst<- ((F_wst_h * q_wst_h) - 
-      (F_est_h * q_est_h)) + 
-      ( (G_nth_h * q_nth_h) - 
-          (G_sth_h * q_sth_h))   
+   fst<- ((F_wst_h * (q_wst_h + q_cen_h)/2) - 
+      (F_est_h * (q_est_h + q_cen_h)/2)) + 
+      ( (G_nth_h * (q_nth_h + q_cen_h)/2) - 
+          (G_sth_h * (q_sth_h + q_cen_h)/2) )   
  lst <- (pi_cen * Re^2 * cos(w) * del_l * del_w * 
       (
       ((sig_low * q_low_h) - (sig_up * q_up_h))/del_sig
@@ -69,5 +69,34 @@ q_cen_t <- function(h){
 }
 
 q_cen_t(h = (5*60*1))
+
+```
+7.2b
+```{r}
+theta_wst_h <- 297 #k
+theta_est_h <- 298 #k
+theta_sth_h <- 300 #k
+theta_nth_h <- 299 #k
+theta_low_h <- 298.3 #k
+theta_up_h <- 298.7 #k
+theta_cen_h <- mean(theta_wst_h,theta_est_h,theta_sth_h,theta_nth_h, theta_low_h, theta_up_h)
+
+theta_cen_t <- function(h){
+  init <- ((pi_cen_h * theta_cen_h)/ pi_cen)  
+   tme <- (h / (pi_cen * Re^2 * cos(w) * del_l * del_w))
+   fst<- ((F_wst_h * (theta_wst_h + theta_cen_h)/2) - 
+      (F_est_h * (theta_est_h + theta_cen_h)/2)) + 
+      ( (G_nth_h * (theta_nth_h + theta_cen_h)/2) - 
+          (G_sth_h * (theta_sth_h + theta_cen_h)/2) )
+    lst <- (pi_cen * Re^2 * cos(w) * del_l * del_w * 
+      (
+      ((sig_low * theta_low_h) - (sig_up * theta_up_h))/del_sig
+      )
+    )
+  
+ return(init + tme*(fst + lst))
+}
+
+theta_cen_t(h = (5*60*1))  
 
 ```
