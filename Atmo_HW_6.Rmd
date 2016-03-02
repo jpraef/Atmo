@@ -4,3 +4,20 @@ author: "Joseph Crockett"
 date: "March 2, 2016"
 output: html_document
 ---
+Joseph Crockett
+March 1, 2016
+ES 292: Atmospheric Modeling
+Homework 6
+
+7.2 and 7.*1
+
+7.2 Code
+```{r }
+F_est_h <- ((pi_cen_h + pi_est_h)/2 * (u_est_h * RC * del_w))
+F_wst_h <- ((pi_wst_h + pi_cen_h)/2 * (u_wst_h * RC * del_w))
+G_nth_h <- ((pi_cen_h + pi_nth_h)/2 * (v_nth_h * RC * cos(w) * del_l))
+G_sth_h <- ((pi_sth_h + pi_cen_h)/2 * (v_sth_h * RC * cos(w) * del_l))
+
+q_cen_t <- ((pi_cen_h * q_cen_h)/ pi_cen) + ( (F_wst_h * ((q_wst_h + q_cen_h) / 2 ) ) - (F_est_h * ((q_cen_h + q_est_h) / 2 ) ) + ( (G_nth_h * ((q_nth_h + q_cen_h) / 2 ) ) - (G_sth_h * ((q_cen_h + q_sth_h) / 2)) )) + (pi_cen * Rc^2 * cos(w) * del_l * del_w * (((sig_wst * q_low_h) - (sig_est * q_up_h))/del_sig))
+
+```
