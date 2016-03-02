@@ -21,18 +21,21 @@ pi_wst_h <- 745 #hPa
 pi_est_h <- 752 #hPa
 pi_nth_h <- 754 #hPa
 pi_sth_h <- 746 #hPa
-Rc <-
+pi_cen_h <- mean(pi_wst_h, pi_est_h, pi_nth_h, pi_sth_h) #hPa
+pi_cen <- pi_cen_h
+Re <- 6.371 * 10^6 #m
 w <- 45 * pi/180 
 del_w <- 4 * pi/180
 del_l <- 5 * pi/180
 del_sig <- .05
-h = 
+hh <- 5 * 60 * 1 #minutes * seconds * #timesteps
 q_wst_h <- .0062 #kg/kg
 q_est_h <- .0047 #kg/kg
 q_nth_h <- .0064 #kg/kg
 q_sth_h <- .0054 #kg/kg
 q_low_h <- .005 #kg/kg
 q_up_h <- 006 #kg/kg
+q_cen_h <- mean(q_wst_h, q_est_h, q_nth_h, q_sth_h, q_low_h, q_up_h)
 sig_low <- -4.58*10^(-6) #sig/s
 sig_up <- -6.11 * 10^(-6) #sig/s
 
@@ -42,11 +45,29 @@ sig_up <- -6.11 * 10^(-6) #sig/s
 
 
 
-F_est_h <- ((pi_cen_h + pi_est_h)/2 * (u_est_h * RC * del_w))
-F_wst_h <- ((pi_wst_h + pi_cen_h)/2 * (u_wst_h * RC * del_w))
-G_nth_h <- ((pi_cen_h + pi_nth_h)/2 * (v_nth_h * RC * cos(w) * del_l))
-G_sth_h <- ((pi_sth_h + pi_cen_h)/2 * (v_sth_h * RC * cos(w) * del_l))
+F_est_h <- ((pi_cen_h + pi_est_h)/2 * (u_est_h * Re * del_w))
+F_wst_h <- ((pi_wst_h + pi_cen_h)/2 * (u_wst_h * Re * del_w))
+G_nth_h <- ((pi_cen_h + pi_nth_h)/2 * (v_nth_h * Re * cos(w) * del_l))
+G_sth_h <- ((pi_sth_h + pi_cen_h)/2 * (v_sth_h * Re * cos(w) * del_l))
 
-q_cen_t <- ((pi_cen_h * q_cen_h)/ pi_cen) + ( (F_wst_h * ((q_wst_h + q_cen_h) / 2 ) ) - (F_est_h * ((q_cen_h + q_est_h) / 2 ) ) + ( (G_nth_h * ((q_nth_h + q_cen_h) / 2 ) ) - (G_sth_h * ((q_cen_h + q_sth_h) / 2)) )) + (pi_cen * Rc^2 * cos(w) * del_l * del_w * (((sig_low * q_low_h) - (sig_up * q_up_h))/del_sig))
+
+q_cen_t <- function(h){
+  ((pi_cen_h * q_cen_h)/ pi_cen) + 
+    (h / (pi_cen * Re^2 * cos(w) * del_l * del_w)) *
+  ( 
+    ((F_wst_h * ((q_wst_h + q_cen_h) / 2 ) ) - 
+      (F_est_h * ((q_cen_h + q_est_h) / 2 ) )) + 
+      ( (G_nth_h * ((q_nth_h + q_cen_h) / 2 ) ) - 
+          (G_sth_h * ((q_cen_h + q_sth_h) / 2)) )
+    ) + 
+  (
+    pi_cen * Re^2 * cos(w) * del_l * del_w * 
+      (
+      ((sig_low * q_low_h) - (sig_up * q_up_h))/del_sig
+      )
+    )
+}
+
+q_cen_t(h = (5*60*1))
 
 ```
