@@ -45,27 +45,27 @@ sig_up <- -6.11 * 10^(-6) #sig/s
 
 
 
-F_est_h <- ((pi_cen_h + pi_est_h)/2 * (u_est_h * Re * del_w))
-F_wst_h <- ((pi_wst_h + pi_cen_h)/2 * (u_wst_h * Re * del_w))
-G_nth_h <- ((pi_cen_h + pi_nth_h)/2 * (v_nth_h * Re * cos(w) * del_l))
-G_sth_h <- ((pi_sth_h + pi_cen_h)/2 * (v_sth_h * Re * cos(w) * del_l))
+F_est_h <- pi_est_h * u_est_h * Re * del_w
+F_wst_h <- pi_wst_h * u_wst_h * Re * del_w
+G_nth_h <- pi_nth_h * v_nth_h * Re * cos(w) * del_l
+G_sth_h <- pi_sth_h * v_sth_h * Re * cos(w) * del_l
 
 
 q_cen_t <- function(h){
-  ((pi_cen_h * q_cen_h)/ pi_cen) + 
-    (h / (pi_cen * Re^2 * cos(w) * del_l * del_w)) *
-  ( 
-    ((F_wst_h * ((q_wst_h + q_cen_h) / 2 ) ) - 
-      (F_est_h * ((q_cen_h + q_est_h) / 2 ) )) + 
-      ( (G_nth_h * ((q_nth_h + q_cen_h) / 2 ) ) - 
-          (G_sth_h * ((q_cen_h + q_sth_h) / 2)) )
-    ) + 
-  (
-    pi_cen * Re^2 * cos(w) * del_l * del_w * 
+  init <- ((pi_cen_h * q_cen_h)/ pi_cen)  
+   tme <- (h / (pi_cen * Re^2 * cos(w) * del_l * del_w)) 
+   fst<- ((F_wst_h * q_wst_h) - 
+      (F_est_h * q_est_h)) + 
+      ( (G_nth_h * q_nth_h) - 
+          (G_sth_h * q_sth_h))   
+ lst <- (pi_cen * Re^2 * cos(w) * del_l * del_w * 
       (
       ((sig_low * q_low_h) - (sig_up * q_up_h))/del_sig
       )
     )
+ 
+ 
+ return(init + tme*(fst + lst))
 }
 
 q_cen_t(h = (5*60*1))
