@@ -24,7 +24,7 @@ pi_sth_h <- 746 #hPa
 pi_cen_h <- mean(pi_wst_h, pi_est_h, pi_nth_h, pi_sth_h) #hPa
 pi_cen <- pi_cen_h
 Re <- 6.371 * 10^6 #m
-w <- 45 * pi/180 
+w <- 45 * pi/180 #radians
 del_w <- 4 * pi/180
 del_l <- 5 * pi/180
 del_sig <- .05
@@ -39,12 +39,6 @@ q_cen_h <- mean(q_wst_h, q_est_h, q_nth_h, q_sth_h, q_low_h, q_up_h)
 sig_low <- -4.58*10^(-6) #sig/s
 sig_up <- -6.11 * 10^(-6) #sig/s
 
-
-
-
-
-
-
 F_est_h <- pi_est_h * u_est_h * Re * del_w
 F_wst_h <- pi_wst_h * u_wst_h * Re * del_w
 G_nth_h <- pi_nth_h * v_nth_h * Re * cos(w) * del_l
@@ -55,8 +49,8 @@ q_cen_t <- function(h){
   init <- ((pi_cen_h * q_cen_h)/ pi_cen)  
    tme <- (h / (pi_cen * Re^2 * cos(w) * del_l * del_w)) 
    fst<- ((F_wst_h * (q_wst_h + q_cen_h)/2) - 
-      (F_est_h * (q_est_h + q_cen_h)/2)) + 
-      ( (G_nth_h * (q_nth_h + q_cen_h)/2) - 
+      (F_est_h * (q_est_h + q_cen_h)/2) + 
+       (G_nth_h * (q_nth_h + q_cen_h)/2) - 
           (G_sth_h * (q_sth_h + q_cen_h)/2) )   
  lst <- (pi_cen * Re^2 * cos(w) * del_l * del_w * 
       (
@@ -97,6 +91,6 @@ theta_cen_t <- function(h){
  return(init + tme*(fst + lst))
 }
 
-theta_cen_t(h = (5*60*1))  
+theta_cen_t(h = (30*60*1))  
 
 ```
