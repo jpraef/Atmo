@@ -47,7 +47,7 @@ wp2 <- wps * ((wgs / wg2) ^ b)
 ks2 <-  418 * exp( -log10( abs( wp2 ) ) - 2.7)
 
 ifelse( ks1 > .172, ks1, .172)
-ifelse( ks2 > .172, ks2, .172)
+ifelse( ks2 > .172, ks2, .172) 
 
 ```
 The thermal conductivity of a sandy-loam soil-water-air mxture was greater when volumetric water content was .2 m3 m-3.  
