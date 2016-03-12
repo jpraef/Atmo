@@ -1,0 +1,54 @@
+---
+title: '8.8'
+author: "Joseph Crockett"
+date: "March 7, 2016"
+output: html_document
+---
+8.8
+
+Why? Page 272:Ground Temperature and soil moisture affect fluxes of energy and moisture from the ground to the boundary layer.
+Factors affecting soil temperature: 
+Specific heat
+Soil Moisture
+Conduction between surface soil and below surface molecules
+Solar radiation
+Vegetation Cover
+Precipitation
+
+heat conduction equation 8.91:
+
+dTs / dt = 1/pgCg d/dz(ks dTs/dz)
+Ts = soil temperature
+ks = thermal conductivity of soil-water-air mixture
+pg is density of mixture
+cg is the specific head of the mixture
+ks dTs/dz is the condutive heat flux through the soil water air mixture
+
+ks = max(418e^-log10|wp|-2.7, .172)
+wp = moisture potential cm 
+wp = wps ( wgs/ wg) ^b
+wps is the moisture potential when soil is saturated with liquid water, wg is volumetreic water content of the soil (m3 water per m3 soil water air), wgs is max volumentric water content of give soil type, and b is a coefficiten required to fit to data, all given on table 8.3
+
+calculate the thermal conductivity (ks) of a soil water air mixture for sandy loam soil when the volumentric water content is .2 and .005 m3 m-3.  which is more conductive? why?
+
+Sandy loam soil, given on table 8.3
+```{r}
+b = 4.05
+wgs = .435 #m3m-3
+wps = -21.8 #cm
+
+wg1 <- .2 #m3m-3
+wg2 <- .005 #m3m-3
+
+wp1 <- wps * ((wgs / wg1) ^ b)
+ks1 <-  418 * exp( -log10( abs( wp1 ) ) - 2.7)
+
+wp2 <- wps * ((wgs / wg2) ^ b)
+ks2 <-  418 * exp( -log10( abs( wp2 ) ) - 2.7)
+
+ifelse( ks1 > .172, ks1, .172)
+ifelse( ks2 > .172, ks2, .172)
+
+```
+The thermal conductivity of a sandy-loam soil-water-air mxture was greater when volumetric water content was .2 m3 m-3.  
+
