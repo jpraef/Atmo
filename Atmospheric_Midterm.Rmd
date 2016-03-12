@@ -1,6 +1,6 @@
 ---
 title: "Atmo_Midterm_1"
-output: html_document
+output: word_document
 ---
 Joseph Crockett  
 March 9th, 2016  
@@ -16,7 +16,7 @@ The free troposphere extends from 0 to 10 km altitude.  At 1 km, p~d~ = 898.80 a
 2.8704 m^3^ hPa kg ^-1^ K ^-1^
 
 1)  Mass mixing ratio of COS (q)
-$$ w_{q} = \frac{rho_{q}}{\rho_{d}} = \frac{\m_{q}}{\m_{d}} \chi_q $$
+$$ w_{q} = \frac{\rho_{q}}{\rho_{d}} = \frac{m_{q}}{m_{d}} \chi_q $$
 
 2)  Partial Pressure
 $$ \chi_{q} = \frac{P_{q}}{P_{d}} $$
@@ -110,7 +110,7 @@ Snk <-  - uuu * ((N2-N1)/delx) # molec m-1 s-1
 
 The sink in a 1 dimensional model is `r Snk` molec m-1 s-1.  Because we are looking at a one dimensional model, I assume that a cubic term would not accurately depict what happened to COS over the transect.  
 
-Using a 1D continuity equation, the size of the sink for the steady state condition is `r Snk` molec m-3 s-1
+Using a 1D continuity equation, the size of the sink for the steady state condition is `r Snk` molec m-1 s-1
 
 7. Campbell et al. (2008) used a more complicated model (numerical solution to the 3-D continuity equation) to find that the plant sink is roughly 20 pmol m-2 s-1 (pico = 1e-12) would result in a simulated drawdown of 60 ppt-v (ppt = 1e12 pp).  Does your simple model in 4.1 above provide a back of the envelope confirmation of the more complicated model (convert your answer in problem 6 to a per area surface flux by dividing by the boundary layer height)?  Why?
 
