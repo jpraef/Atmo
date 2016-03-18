@@ -1,0 +1,108 @@
+---
+title: "Atmo_HW_7"
+output: word_document
+---
+Joseph Crockett  
+March 8th, 2016  
+ES 292  
+
+Homework #7
+
+8.3
+8.5
+Note: 8.1* was removed from the homework
+
+8.3:
+Assume z0,m = 0.01 m, u∗ = 1 m s−1, ubar(zr) = 10 m s-1 and vbar(zr) = 5 m s -1 at zr = 10 m. Calculate the eddy diffusion coefficient for momentum, K m, z x.
+Notes: z0,m is the surface roughness length for momentum, the height above the surface at which the log profile of wind speed vs alititude extrapolates to zero wind speed
+u* is the friction wind speed: vertical flux of horizontal momentum in the surface layer
+ubar(zr) and vbar(zr) are the mean horizontal wind speed at the reference height
+zr is the reference height
+vh is the horizontal windspeed
+Kmzx is the eddy diffusion coeffiecient for momentum
+
+$$ K_{m,zx} = K_{m,zy} = \frac{u_{*}^{2}}{|v_{h}(z_{r})|}(z_{r} - z_{0,m}) $$
+$$ |v_{h}| = \sqrt{u^2 + v^2} $$
+
+```{r}
+u_z_r <- 10 #mean horizontal wind speed east west, m/s
+v_z_r <- 5 #mean horizontal wind speed north south, m/s
+u_s <- 1 #m/s, friction wind speed
+z_r <- 10 #m, reference height
+z_om <- .01 #m, surface roughness length for momentum
+
+v_h_z_r <- sqrt(u_z_r^2 + v_z_r^2) #horizontal windspeed at reference height
+kmzx <- (u_s^2) / (abs(v_h_z_r)) * (z_r - z_om) #Eddy diffusion coefficient for momentum in the surface layer from similarity theory, m2/s
+
+```
+The value of kmzx, `r kmzx` indicates that eddy formation is fairly small. I assume this value is accurate and reasonable given the surface roughness length being low, and the friction wind speed low as well. 
+
+8.5:
+Compare vertical turbulent sensible-heat fluxes over the ocean from bulk aerodynamic formulae and Monin–Obukhov similarity theory. Assume the same conditions as in Problem 8.2, except assume z0,m = 0.000 01 m. Assume θ ̄v at the roughness length for energy equals that at the roughness length for momentum. Discuss differences in results.
+
+zom = .000001 m
+zoh = .0005 m
+u(zr) = 8 ms 
+v(zr) = 2 m
+t(zr) = 285 K
+T(zoh) = 286 K
+pa(zr) = 1004 hPa
+pa(zoh) = 1005 hPa
+g = 9.80665 m s-2
+
+2.96
+
+Bulk heat transter coefficient:
+$$ (w'\theta_{v}')_{s} = -C_{H} | v_{h}(z_{r}) | [ \theta_{v}(z_{r}) - \theta_{v}(z_{0,h}) ] $$
+
+Monin_Obukhov Similarity theory
+
+$$ \theta_{v} = T_{v}\left(\frac{1000}{pa}\right) ^k $$
+
+8.39 richardson
+$$ Ri_{b} = \frac{g[\theta_{v}(z_{r}) - \theta_{v}(z_{0,h})]((z_{r}-z_{0,m})^2 }{ theta_{v}(z_{0,h})[u(z_{r})^2 + v(z_{r})^2](z_{r} - z_{0,h}) } $$
+
+
+8.41
+$$ G_{m},G_{h} = \frac{1}{(1+4.7 Ri_{b})^2} $$
+8.40
+$$ u_{*} = \frac{k | v_{h}(z_{r}) |}{ln(z_{r}/z_{0,m})} \sqrt{G_{m} $$
+$$\theta_{*} = \frac{(k^2|v_{h}(z_{r})|[\theta_{v}(z_{r}) - \theta_{v}(z_{0,h})] }{ u_{*}Pr_{t}ln^2(z_{r}/z_{0,m})} G_{h} $$
+
+Kinematic vertical turbulent sensible-heat flux in the surface layer from K-theory 8.33
+
+$$ (w'\theta_{v}')_{s} = - u_{*}\theta_{*} $$
+```{r}
+zr = 10 #m
+zom = .000001 #m
+zoh = .0005 #m
+uzr = 8 #m/s 
+vzr = 2 #m
+tzr = 285 #K
+tzoh = 286 #K
+pazr = 1004 #hPa
+pazoh = 1005 #hPa
+g = 9.80665 #m/ s-2
+kk = .286
+k = .4
+prt = .95
+Ch =.005 #assumption that the ocean is a near flat surface
+
+
+
+ovzr <- tzr *(1000 / pazr) ^ kk
+ovzoh <- tzoh *(1000 / pazoh) ^ kk
+#Bulk heat transfer
+wtheta = - Ch * abs(vzr) * (ovzr - ovzoh)
+
+#Monin_Obukhov similarity theory
+rib <- (g *(ovzr - ovzoh)*(zr - zom)^2 ) / (ovzoh *(uzr^2 + vzr^2) * (zr - zoh))
+Gm = Gh = 1 / ((1 + 4.7*rib)^2)
+ust <- (k * abs(vzr) / log2(zr/zom) ) * sqrt(Gm)
+thest <- (k^2 *abs(vzr) * (ovzr - ovzoh)) / (ust * prt * log2(zr/zom))
+
+wth <- -ust*thest
+
+```
+
+The bulk heat transfer method gives us `r wtheta` while the Monin-Obukhov method gives us `r wth`.  They are within an order of magnitude, but the value from the bulk heat transfer method is calculated with an assumed value of Ch, which may or may not be representative of the surface measured. In addition, the assumed Ch value is for a smooth surface, of which the ocean is not.   
