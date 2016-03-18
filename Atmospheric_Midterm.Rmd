@@ -1,0 +1,131 @@
+---
+title: "Atmo_Midterm_1"
+output: word_document
+---
+Joseph Crockett  
+March 9th, 2016  
+ES 292: Atmospheric Modeling  
+
+Midterm  
+
+Show all work.  State and justify any assumptions.
+1. Campbell et al. (2008) report a free troposphere COS (carbonyl sulfide) volume mixing ratio of carbonyl sulfide (COS) of 460 ppt-v (part per trillion -volume). What is the mass mixing ratio, partial pressure, and mass concentration (g m^-3^)?  State and justify any assumptions (e.g. assume dry air, T = 288 K, pd = 1013 hPa).    
+
+Assumptions:
+The free troposphere extends from 0 to 10 km altitude.  At 1 km, p~d~ = 898.80 and T = 281.65.  I assume dry air because it reduces the number of assumptions that must be made.  Molecular weights of COS and dry air are 60 g mal^-1^ and 28.966 g mol ^-1^, and the gas constant for dry air is R' = 
+2.8704 m^3^ hPa kg ^-1^ K ^-1^
+
+1)  Mass mixing ratio of COS (q)
+$$ w_{q} = \frac{\rho_{q}}{\rho_{d}} = \frac{m_{q}}{m_{d}} \chi_q $$
+
+2)  Partial Pressure
+$$ \chi_{q} = \frac{P_{q}}{P_{d}} $$
+$$ P_{q} = \chi_{q} P_{d} $$
+
+3) Mass Concentration
+$$ P_{d} = \rho_{d}R'T $$
+$$ \rho_{d} = \frac{P_{d}}{R'T} $$
+$$ \rho_{q} = w_{q} \rho_{d} $$
+
+```{r 1}
+Pd = 898.80 #hPa
+Tt = 281.65 #K
+mq = 60 #gmol^-1, molecular weight of COS
+md = 28.966 #gmol^-1, molecular weight of dry air
+Rr = 2.8704 #m3hPakg-1K-1
+chiq = 460 #parts per trillion by volume
+
+wq = (mq/md) * (chiq) #pptm
+```
+COS mass mixing ratio in parts per trillion by mass is `r wq` pptm.  
+
+```{r 2}
+Pq = chiq* 10^-12 *Pd #hPa
+```
+The Partial Pressure of COS is `r Pq ` hPa.  COS pptv was transformed to g g-1 by dividing by 10^12
+
+```{r 3}
+rhod = Pd/(Rr*Tt) *1000^(-1) #g/m^3
+rhoq = wq * 10^-12 * rhod #g/m^3
+```
+The mass concentration of COS is `r rhoq` g m^-3^
+
+For such a small concentration of COS ( in the parts per trillion), it follows that the partial pressure and mass concentration would have low values. The mass mixing ratio still in the parts per trillion but as a percentage of total mass, the mass of COS is molecule for molecule greater than dry air. 
+
+2. What, if any effect, does a change in pressure have on these quantities solved for in problem 1 (qualitative answer is fine)?  
+
+Given that a change in dry air pressure does not come with a change in temperature, we would see an increase in partial pressure of COS and mass concentration of COS following an increase in pressure, and a decrease in pp and mc following a decrease in pressure.  As pressure increases, more molecules are forced into a volume, increasing chiq, which in turn increases the mass ratio of the heavier COS molecule to lighter dry air. (kg / kg).  In a given volume then, an increase in total pressure must be balanced by an increase in the partial pressures of its elements.  Also for a given volume, an increase in mass ratio leads to an increase in mass per volume as more molecules are forced into the same space.
+
+
+3. If the relative humidity changes from 1% to 100%, what effect does this have on the moist air mass mixing ratio of COS?  
+
+As the relative humidity rises, or as air reaches the point of total saturation, the partial pressure of water in the air increases to the saturation vapor pressure.  Although saturation vapor pressure may be a small percentage of the total air pressure, it will decrease the mass mixing ratio of COS to moist air if we assume that 
+$$ q = \frac{\rho_{q}}{\rho_{a}} $$
+So in areas of high humidity, initial partial pressure measurements of COS must be corrected before comparison to measurements in areas of low humidity.
+
+
+4.If the potential temperature is higher in the upper boundary layer than the surface layer, then is the air stable, neutral, or unstable?  Why?  
+
+The potential temperature is a measure of temperature of a air parcel if the parcel were brought to 1000 hPa.  Stability in this context is the tendency for an air parcel to cool adiabtically as it rises, decelerate once it reaches air with ambiant potential as itself, and sink to its original position. In this case, because the ambiant potential temperature curve increases over altitude, a rising air parcel will always be cooler than the ambiant air, and sink.  This air profile is stable.  
+
+5. Derive the 1-D continuity equation accounting for advection (ignore turbulent diffusion, molecular diffusion, and sources and sinks).  
+
+The continuity equation describes atmospheric variables as they enter, accumulate, and leave a gridcell.  In a 1-D model accounting for advection, or the mean horizontal windspeed, we see air entering from the, say, east, and exiting from the west.  The length of the grid cell, the wind speed, and the change in time are the descriptive variables in this case. Number concentration of molecules is an atmospheric variable from which we can derive the 1 d continuity equation accounting for advection
+
+
+
+Thus:
+$$ \Delta u = u1 - u2 $$ Where Delta u is the change in wind speed over the grid cell
+$$ \Delta N = N1 - N2 $$ Where Delta N is the change in number concentration over the grid cell
+$$ \Delta u \Delta N \Delta x = u1N1 * \Delta t - u2N2 * \Delta t $$ Where Delta t is the time step
+$$ \frac{\Delta N}{\Delta t} = - \frac{ u2N2 - u1N1 }{\Delta x} $$ The change in number concentration over time is equivalent to the change in boundary conditions over the length of the grid cell
+$$ \frac{\delta N}{\delta t} = - \frac{uN}{\delta x} $$ As time and distance approach zero, the change in number concentation over time is equal to the product of the wind speed over that distance and the number concentration over that distance.
+
+
+6. Campbell et al. (2008) report airborne measurements of the drawdown of atmospheric COS mixing ratio over the midwestern U.S. summer where the upstream mixing ratio on the Pacific coast is 460 ppt-v and the downstream mixing ratio on the Atlantic coast is 400 ppt-v.   There predominant wind is westerly so there must be a sink of COS over North America.  This sink is thought to be uptake by plant leaves, primarily over the midwest.  Assume the region of plant uptake of the U.S. is approximately 1000 km wide, the boundary layer height is 2 km, and an average wind speed of 5 m s-1.  Use the 1-D continuity equation to estimate the size of the sink (molec/m^3/s) for the steady state condition (∂N/∂t = 0).  So equation would be:  ∂N/∂t = 0 = -u(∂N/∂x) - Sink  
+
+Assuming Pd = 1013 hPa and T = 288K (standard ground pressure and temperature)
+Boltzmann's constant = 1.3880658 x 10^-25^ m3 hPa K-1 molec -1 = kb
+$$ \frac{\delta N}{\delta t} = 0 = -u \frac{\delta N}{\delta x} - Sink $$
+$$ Sink = -u \frac{\delta N}{\delta x} $$
+
+$$ N1 = \frac{Pd}{kb * T} * 10^-12 * 460 pptv $$ molec / m3
+$$ N2 = \frac{Pd}{kb * T} * 10^-12 * 400 pptv $$ molec / m3
+$$ Sink = -(5 m s^{-1} ) (\frac{N2 - N1}{1000000 m } $$
+
+```{r Sink}
+Pdd <- 1013 #hPa
+chiq1 <- 460 * (10^-12) #molec gas / molec dry air
+chiq2 <- 400 * (10^-12) #molec gas / molec dry air
+TTT <- 288 #K
+uuu <- 5 #m s-1
+delx <- 1000*1000 # kg -> m 
+kbm <- (1.3880658*(10^-25))^(1/3) #m hPa K-1 molec -1, converting to one dimensional meter
+Ndd <- (Pdd / (kbm * TTT))
+N1 <- Ndd * chiq1 # molec  m
+N2 <- Ndd * chiq2 # molec  m
+
+Snk <-  - uuu * ((N2-N1)/delx) # molec m-1 s-1
+```
+
+The sink in a 1 dimensional model is `r Snk` molec m-1 s-1.  Because we are looking at a one dimensional model, I assume that a cubic term would not accurately depict what happened to COS over the transect.  
+
+Using a 1D continuity equation, the size of the sink for the steady state condition is `r Snk` molec m-1 s-1
+
+7. Campbell et al. (2008) used a more complicated model (numerical solution to the 3-D continuity equation) to find that the plant sink is roughly 20 pmol m-2 s-1 (pico = 1e-12) would result in a simulated drawdown of 60 ppt-v (ppt = 1e12 pp).  Does your simple model in 4.1 above provide a back of the envelope confirmation of the more complicated model (convert your answer in problem 6 to a per area surface flux by dividing by the boundary layer height)?  Why?
+
+```{r}
+blh <- 2 * 1000 #Boundary height km-> m
+soph_snk <- Snk / blh # molec m-2 s-1
+
+soph_snk_pico <- soph_snk * 10^12
+
+
+```
+It appears that my calculations are greater than the complicated model's results: `r soph_snk_pico ` pmol m-2 s-1 vs 20 pmol m-2 s-1.  A source of error could be that the more complicated model accounts for differences in surface pressure, vegetation dipersal, and moist air.  In my simple model, the 1000 km transect is assumed to be completely vegetated by a single plant with a fixed rate of COS uptake.  Dry air is also assumed, which as explained earlier, may overestimate gas partial pressure depending on relative humidity.  Lower surface pressure would also decrease gas concentrations.  That said, the difference between `r soph_snk_pico ` and 20 is slight when we are talking about picomols. 
+
+
+
+Appendix
+
+Avogadro's number: 6.022e23 mole/molMolecular weight: COS 60 g mol-1, water vapor 18 g mol-1, dry air 28.966 g mol-1
