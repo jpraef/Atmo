@@ -1,0 +1,77 @@
+---
+title: "Homework_8"
+output: word_document
+---
+
+Joseph Crockett  
+March 29th, 2016  
+ES 292  
+Homework #8: 10.2, 10.3 for NO
+
+10.2
+When T = 298 K and pd = 1013 hPa, calculate the first-order rate coefficient for
+
+$$ N_{2}O_{5} \rightarrow(m) \dot{N}O_{2} + N\dot{O_{3}} $$  
+
+Repeat for T = 288 K. Discuss temperature effects on the reaction rate coefficient.  
+
+This is the nonelementary form of a bimolecular decomposition reaction, dependent on temperature.
+
+10.20 : $$ [M] = N_{a} = \frac{P_{a}}{k_{b}T}  $$
+10.30 : $$ k_{r} = \frac{k_{\infty,T} k_{0,T} [M] }{k_{\infty,T} + k_{0,T} [M]} F_{c} ^ { [1 + (log_{10} \frac{k_{0,T} [M]}{k_{\infty,T}} ^{2}] ^{-1}} $$  
+
+From table B.4,
+k~0, T~ = 1.00 x 10 ^-3^ (300/T)^3.5^ x e^ -11000/T^ cm^6^ molec. ^-2^ s^-1^
+k~inf, T~ = 9.70 x 10^14^(300/T)^-0.1^ x e^-11080/T^ cm^3^ molec. ^-1^ s^-1^
+F~c~ = 0.33  
+
+```{r problem 1}
+
+pd <- 1013 #hPa
+T1 <- 298 #K
+T2 <- 288 #K
+kb <- 1.380658 * 10^(-19) # cm3 hPa K-1 molec -1
+Fc <- .33
+
+
+rt_coef <- function(t, p){
+  M <- p / (kb * t)
+  k0t <- (1.00 * (10^-3)) * (((300/t)^(3.5)) * exp(-11000/t))
+  kinf <- (9.7 * (10^14)) * (((300/t)^(-.1)) * exp(-11080/t))
+  kr <- ((kinf * k0t * M)/(kinf + k0t*M)) * (Fc ^ ((1 + (log10((k0t * M)/kinf))^2)^-1))
+  print(M)
+  print(k0t)
+  print(kinf)
+  print(kr)
+}
+
+rt_coef(298,1013)
+rt_coef(288,1013)
+```
+10.3 for NO
+Estimate the e-folding lifetimes of CO, **NO**, O3 , SO2 , HNO3 , ISOP (iso-
+prene), and HO2 against loss by OH if [OH] = 1.0 × 10^6^ molec. cm^{−3}, T = 288 K, and pd = 1010 hPa. The rate coefficients are listed in Appendix Table B.4. Order the species from shortest to longest lifetimes. Which species will most likely reach the stratosphere if only OH reaction is considered?
+
+An e-folding lifetime is the time required for a species ( in this case, NO) to decrease to 1/e its original value.  
+
+In a bimolecular reaction, the e folding lifetime is 
+
+10.49: $$ \tau_{A2} = \frac{1}{k_{s}[B]_{0}} $$
+
+```{r}
+ks <- 7.4 * (10^-31) * (300/288)^(2.4) #cm3 s-1
+```
+In the reaction $NO + OH \rightarrow HONO$, 
+$$ k_{s} = 7.40 x 10^{-31} (300/T)^{2.4} $$ = `r ks`, from appendix B.4
+and
+[B], the initial quantity of OH, is 1.0 × 10^6^ molec. cm^{−3} 
+Thus,
+
+```{r problem 2}
+bb <- 1.0 * (10^6) #molec. cm-3
+ta2 <- 1 / ks * (bb) #seconds
+```
+
+The e-folding lifetime of NO is `r ta2` seconds.
+
+
