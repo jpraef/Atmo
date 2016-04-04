@@ -52,7 +52,7 @@ Calculate the number concentration of raindrops from the Marshall–Palmer distr
 
 EQ 13.30
 $$ n_{i} = \Delta d_{i}n_{0}e^{-\lambda_{r}d_{i}} $$
-$$ \lambda_{r} = 4.1 * 10^{-3}R^{-.21} \micro m^{-1} $$
+$$ \lambda_{r} = 4.1 * 10^{-3}R^{-.21} \mu m^{-1} $$
 EQ 13.9
 $$ \Delta d_{i} = d_{i,hi} - d_{i,lo} $$
 $$ n_{T} = n_{0} / \lambda_{r} $$
@@ -66,10 +66,10 @@ R <- 25 #mm h^-1
 lm_r <- (4.1 * (10^-3)) * (R^-.21) #um ^-1
 n0_a <- 8 * (10^-6) # particles cm^ -3 um ^-1
 dd_a <- di_hi_a - di_lo_a #um, diameter width 
-ni_a_lo <- dd_a * n0_a * exp(-lm_r * di_lo_a) #particles cm^-3 of lower boundary
-ni_a_hi <- dd_a * n0_a * exp(-lm_r * di_hi_a) #particles cm^-3 of upper boundary
+ni_a <- dd_a * n0_a * exp(-lm_r * di_lo_a) #particles cm^-3, number concentraion for bin a
 
-print(ni_a_lo)
+
+print(ni_a)
 ```
 
 b)
@@ -80,23 +80,14 @@ di_hi_b <- 900 #um
 
 n0_b <- 8 * (10^-6) # particles cm^ -3 um ^-1 
 dd_b <- di_hi_b - di_lo_b #um, diameter width
-ni_b_lo <- dd_b * n0_b * exp(-lm_r * di_lo_b) #particles cm^-3 of lower boundary
-ni_b_hi <- dd_b * n0_b * exp(-lm_r * di_hi_b) #particles cm^-3 of upper boundary
+ni_b <- dd_b * n0_b * exp(-lm_r * di_lo_b) #particles cm^-3, number concentraion for bin b
 
-#data frame of continuous values between diameters given in a and b
-df_ni <- data.frame(a = seq(200, 300, length.out = 10000), b = seq(800, 900, length.out = 10000))
-df_ni$ni_a <- dd_a * n0_a * exp(-lm_r * df_ni$a)
-df_ni$ni_b <- dd_b * n0_b * exp(-lm_r * df_ni$b)
 
-print(ni_b_lo)
-```
-```{r plot}
-library(ggplot2)
-ggplot(data = df_ni, aes(x = a, y = ni_a)) + geom_line()
-ggplot(data = df_ni, aes(x = b, y = ni_b)) + geom_line()
+print(ni_b)
 ```
 
-The number concentrations are constrained by the size of the droplets.  In case a), ni = `r ni_a_lo`, discrete particles are small and thus more particles will be found in a given area.  In case b), ni = `r ni_b_lo`, although the range of particle sizes is the same as case a) (100 um), the discrete particle sizes are larger.  Thus, fewer droplets will be found in the same given space.
+
+The number concentrations are constrained by the size of the droplets.  In case a), ni = `r ni_a`, discrete particles are small and thus more particles will be found in a given area.  In case b), ni = `r ni_b`, although the range of particle sizes is the same as case a) (100 um), the discrete particle sizes are larger.  Thus, fewer droplets will be found in the same given space.
 
 
 13.5  
@@ -105,3 +96,36 @@ Compare the number concentrations of drops between 18 and 22 μm in diameter at 
 EQ 13.31
 $$ n_{i} = \Delta r_{i} A_{g} r_{i}^{a_{g}} exp \left[ - \frac{\alpha_{g}}{\upsilon_{g}} \left(\frac{\gamma_{i}}{\gamma_{c,g}}\right)^{\upsilon_{g}}\right] $$
 
+```{r}
+
+r_hi <- 22/2 # radius of largest droups in bin, um
+r_lo <- 18/2 # radius of smallest drops in bin, um
+del_r <- r_hi - r_lo #radius width of bin, um
+ri <- mean(r_hi, r_lo) # mean radius of bin
+
+#gamma parameters for base of nimbostratus cloud, given by table 13.4
+Ag_b <- .080606
+al_g_b <- 5.0
+up_g_b <- 1.24
+r_cg_b <- 6.41 #um
+
+#gamma parameters for top of nimbostratus cloud, given by table 13.4
+Ag_t <- 1.0969
+al_g_t <- 1.0
+up_g_t <- 2.41
+r_cg_t <- 9.67 #um
+
+#drop number concentration in bin i for base of nimbostratus cloud
+
+n_base <- del_r * Ag_b * (ri ^ al_g_b) * exp( -(al_g_b/up_g_b) * ( (ri / r_cg_b) ^ up_g_b))
+
+#drop number concentration in bin i for top of nimbostratus cloud
+n_top <- del_r * Ag_t * (ri ^ al_g_t) * exp( -(al_g_t/up_g_t) * ( (ri / r_cg_t) ^ up_g_t))
+
+print(n_base) # particles cm ^-3
+print(n_top) # particles cm ^-3
+
+```
+
+The drop number concentration at the base and top of a nimbostratus cloud are `r n_base` particles cm^-3^ and `r n_top` particles cm^-3^ respectively. I suspect that if we look at different bin widths, we will see greater number concentrations at the base in small bin widths, while at the top, as temperatures drive condensation, we will see greater number concentrations in larger bin widths.
+In addition, these values seem accurate. Nimbostratus clouds are heavy with precipitation, so 10~14 particles cm^-3 seem like an accurate value for this bin (micrometers). 
