@@ -1,6 +1,6 @@
 ---
 title: "HW9"
-output: html_document
+output: word_document
 ---
 Joseph Crockett  
 April 4th, 2016  
@@ -8,10 +8,100 @@ ES 292
 Homework #9: 13.1, 13.4, 13.5
 
 13.1  
-Using the diameter information from Table 13.1, calculate how many (a) gas molecules, (b) medium aerosol particles, and (c) fog drops make up the vol- ume of a single medium raindrop. Use average diameters where applicable.
+Using the diameter information from Table 13.1, calculate how many (a) gas molecules, (b) medium aerosol particles, and (c) fog drops make up the volume of a single medium raindrop. Use average diameters where applicable.
+
+Volume of medium raindrops: 
+```{r}
+Vmr <- pi * (2000^3) / 6 
+
+print(Vmr) # Um ^3
+```
+
+a) 
+
+```{r}
+dm_gs <- .0005 # typical diameter of gas molecules, in um
+v_gs <- pi * (dm_gs^3) / 6 #volume of typical gas molecule, in um^3
+print(Vmr/v_gs) #The number of gas molecules in a medium raindrop.
+```
+b)
+
+```{r}
+dm_map_min <- .2 #um
+dm_map_max <- 1.0 #um
+ave_dm_map <- mean(dm_map_min, dm_map_max)
+v_map <- pi * (ave_dm_map^3) / 6
+print(v_map) #Number of average medium aerosol particles in a medium raindrop
+
+```
+c)
+
+```{r}
+dm_fg_min <- 10 #um
+dm_fg_max <- 20 #um
+ave_dm_fg <- mean(dm_fg_min, dm_fg_max)
+v_fg <- pi * (ave_dm_fg^3) / 6
+print(v_fg) #Number of average fog droplets in a medium raindrop
+
+```
+
 
 13.4  
 Calculate the number concentration of raindrops from the Marshall–Palmer distribution in the diameter ranges (a) 200–300 μm and (b) 800–900 μm, when R = 25 mm h−1. Why are the number concentrations different in the two size ranges?
 
+
+EQ 13.30
+$$ n_{i} = \Delta d_{i}n_{0}e^{-\lambda_{r}d_{i}} $$
+$$ \lambda_{r} = 4.1 * 10^{-3}R^{-.21} \micro m^{-1} $$
+EQ 13.9
+$$ \Delta d_{i} = d_{i,hi} - d_{i,lo} $$
+$$ n_{T} = n_{0} / \lambda_{r} $$
+  
+a) 
+```{r 13.4a}
+#diameter ranges are 200 -300 um
+di_lo_a <- 200 #um
+di_hi_a <- 300 #um
+R <- 25 #mm h^-1
+lm_r <- (4.1 * (10^-3)) * (R^-.21) #um ^-1
+n0_a <- 8 * (10^-6) # particles cm^ -3 um ^-1
+dd_a <- di_hi_a - di_lo_a #um, diameter width 
+ni_a_lo <- dd_a * n0_a * exp(-lm_r * di_lo_a) #particles cm^-3 of lower boundary
+ni_a_hi <- dd_a * n0_a * exp(-lm_r * di_hi_a) #particles cm^-3 of upper boundary
+
+print(ni_a_lo)
+```
+
+b)
+```{r 13.4b}
+#diameter ranges are 200 -300 um
+di_lo_b <- 800 #um
+di_hi_b <- 900 #um
+
+n0_b <- 8 * (10^-6) # particles cm^ -3 um ^-1 
+dd_b <- di_hi_b - di_lo_b #um, diameter width
+ni_b_lo <- dd_b * n0_b * exp(-lm_r * di_lo_b) #particles cm^-3 of lower boundary
+ni_b_hi <- dd_b * n0_b * exp(-lm_r * di_hi_b) #particles cm^-3 of upper boundary
+
+#data frame of continuous values between diameters given in a and b
+df_ni <- data.frame(a = seq(200, 300, length.out = 10000), b = seq(800, 900, length.out = 10000))
+df_ni$ni_a <- dd_a * n0_a * exp(-lm_r * df_ni$a)
+df_ni$ni_b <- dd_b * n0_b * exp(-lm_r * df_ni$b)
+
+print(ni_b_lo)
+```
+```{r plot}
+library(ggplot2)
+ggplot(data = df_ni, aes(x = a, y = ni_a)) + geom_line()
+ggplot(data = df_ni, aes(x = b, y = ni_b)) + geom_line()
+```
+
+The number concentrations are constrained by the size of the droplets.  In case a), ni = `r ni_a_lo`, discrete particles are small and thus more particles will be found in a given area.  In case b), ni = `r ni_b_lo`, although the range of particle sizes is the same as case a) (100 um), the discrete particle sizes are larger.  Thus, fewer droplets will be found in the same given space.
+
+
 13.5  
 Compare the number concentrations of drops between 18 and 22 μm in diameter at the base and at the top of a nimbostratus cloud using a modified gamma distribution. Why do you think the concentrations differ in the two cases?
+
+EQ 13.31
+$$ n_{i} = \Delta r_{i} A_{g} r_{i}^{a_{g}} exp \left[ - \frac{\alpha_{g}}{\upsilon_{g}} \left(\frac{\gamma_{i}}{\gamma_{c,g}}\right)^{\upsilon_{g}}\right] $$
+
