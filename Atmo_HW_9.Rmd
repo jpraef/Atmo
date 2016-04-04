@@ -1,0 +1,17 @@
+---
+title: "HW9"
+output: html_document
+---
+Joseph Crockett  
+April 4th, 2016  
+ES 292  
+Homework #9: 13.1, 13.4, 13.5
+
+13.1  
+Using the diameter information from Table 13.1, calculate how many (a) gas molecules, (b) medium aerosol particles, and (c) fog drops make up the vol- ume of a single medium raindrop. Use average diameters where applicable.
+
+13.4  
+Calculate the number concentration of raindrops from the Marshall–Palmer distribution in the diameter ranges (a) 200–300 μm and (b) 800–900 μm, when R = 25 mm h−1. Why are the number concentrations different in the two size ranges?
+
+13.5  
+Compare the number concentrations of drops between 18 and 22 μm in diameter at the base and at the top of a nimbostratus cloud using a modified gamma distribution. Why do you think the concentrations differ in the two cases?
