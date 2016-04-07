@@ -31,7 +31,7 @@ dm_map_min <- .2 #um
 dm_map_max <- 1.0 #um
 ave_dm_map <- mean(dm_map_min, dm_map_max)
 v_map <- pi * (ave_dm_map^3) / 6
-print(v_map) #Number of average medium aerosol particles in a medium raindrop
+print(Vmr/v_map) #Number of average medium aerosol particles in a medium raindrop
 
 ```
 c)
@@ -41,7 +41,7 @@ dm_fg_min <- 10 #um
 dm_fg_max <- 20 #um
 ave_dm_fg <- mean(dm_fg_min, dm_fg_max)
 v_fg <- pi * (ave_dm_fg^3) / 6
-print(v_fg) #Number of average fog droplets in a medium raindrop
+print(Vmr/v_fg) #Number of average fog droplets in a medium raindrop
 
 ```
 
