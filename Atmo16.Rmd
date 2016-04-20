@@ -1,0 +1,49 @@
+---
+title: '16.1'
+output: html_document
+---
+
+16.1
+Calculate the diffusion coefficient of ammonia gas in air assuming the air temperature is 288 K, the air pressure is 1013 hPa, and the air is dry.
+
+Background:
+
+From 16.2.1
+Molecular diffusion is the movement of molecules due to their kinetic energy, and the redirection due to collision.
+
+```{r}
+
+
+eqsta <- function(pre, temp){
+  #pre = air pressure (hPa)
+  #temp = temperature (K)
+  gscon = 2870.3 #gas constant dry air (cm3 hPa g -1 K -1) 
+  
+  answ <- pre / ( temp * gscon) #air density (g cm-3)
+  print(answ)
+}
+
+
+dens_16 <-eqsta(1013, 288)
+#[1] 0.001225433 g cm-3
+
+DQ <- function(diameterq, dens, temper, molewghtq){
+  #diameterq = collision diameter, gas q (cm)
+  #dens = density of air (g cm-3)
+  #temper = absolute temperatur (K)
+  #molewghtq = molecular weight of gas q (g mol -1)
+  avo <- 6.0221367 * (10^23) # Avogadro's number, molec. mol-1
+  ugc <- 8.31451 * (10^7) #universal gas constant (g cm2 s-2 mol-1 K-1)
+  ma <- 28.966 #molecular weight of air (g mol -1)
+  answ <- (5 / (16 * avo * (diameterq^2) * dens)) * sqrt(((ugc * temper * ma) / (2 *pi)) * (( molewghtq + ma ) / molewghtq)) #molecular diffusion coefficient (cm2 s-1)
+  
+  print(answ)
+}
+
+DQ((4.32 * (10^-8)), dens_16, 288, 17.031)
+#[1] 0.1238956 cm2 s-1
+
+dens_16.2 <- eqsta(1013, 293)
+DQ((4.32 * (10^-8)), dens_16.2, 293, 17.031)
+#[1] 0.127136 cm2 s-1
+

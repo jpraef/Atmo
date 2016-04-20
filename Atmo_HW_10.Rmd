@@ -1,0 +1,136 @@
+---
+title: "HW10"
+output: word_document
+---
+Joseph Crockett  
+April 11th, 2016  
+ES 292  
+Homework #10: 16.4
+
+16.4   
+Calculate the critical radius and critical supersaturation when a 0.1-μm radius particle contains:    
+(a) 0.05 mol kg−1 of an organic compound of molecular weight 120 g mol−1 , and   
+(b) 0.05 mol kg−1 of sodium chloride of molecular weight 58.44 g mol−1.   
+Assume the organic compound does not dissociate, sodium chloride dissociates completely, and T = 298.15 K. Which of the two solutes enhances CCN (Cloud Condensation Nuclei) activation the most? Explain.
+
+The Critical Radius the radius at which the sum of the saturation ratio and the surface tension is at its maximum. Critical saturation is the equilibrium staturation found at this radius.  Supersaturation is this value minus one.
+Cloud concensation nuclei are particles that water can heterogeneously nucleate on. Particles smaller than the critcal radius cannot activate to cloud drop size unless ambient saturation ratio exceeds the critical saturation ratio. 
+
+
+16.43
+$$ r* = \sqrt{\frac{3b }{ a}} $$ um
+$$ S* = 1 + \sqrt{\frac{4a^{3}}{27b}} - 1 $$ (%)
+$$ a = \frac{2 \sigma_{p} m_{p}}{R*T \rho_{p,i}} $$
+$$ b = \frac{3 m_{v}i_{v}M_{s}}{4\pi\rho_{w}m_{s}} $$
+
+Where m~p~ is the average particle molecular weight (g mol -1), m~v~ is the molecular weight of water (g mol-1), M~s~ is the mass of solute in the particle(g), m~s~ is the molecular weight of the solute (g mol -1), i~v~ is the degree of dissociation of the solute (NaCl, i~v~ = 2; organic, i~v~ = 1), o_p is the surface tension of water containing ions, R* is the universal gas constant(8.31451 × 10^7^ g cm2 s−2 mol−1 K−1), T is absolute temperature, and rho~p,i~ is the average particle density (g cm-3)
+
+Unfortunately, I must make assumptions regarding either the density of the compounds or the partial pressures of the water/gases. I'm going to use 1.0 g cm-3 for the gasses density and 2.0 g cm-3 for the water density.
+
+```{r}
+univ <- 8.31451 * (10^7) #g cm2 s−2 mol−1 K−1, universal gas constant
+
+afunc <- function(sigp, Temp, mp, rhopi){
+  
+  answ <- (2 * sigp * mp) / (univ * Temp * rhopi)
+  print(answ)
+  
+}
+
+bfunc <- function(mv, iv, Ms, rhow, ms){
+  
+  answ <- (3 * mv * iv * Ms) / (4 * pi * rhow *ms)
+  print(answ)
+}
+
+
+Massp <- function(radius, pv){
+ answ <- (4/3) * pi * radius^3 * pv
+  print(answ)
+}
+
+critr <- function(a, b){
+    answ <- sqrt((3 * b)/a)
+    print(answ)
+}
+
+critss <- function(a, b){
+  answ <- sqrt((4 * a^3) / (27 *b))
+    print(answ)
+}
+
+
+
+```
+
+a) Surface tension of water containing dissolved organics is 
+
+$$ \sigma_{p} = \sigma_{w/a} - .0187T ln(1+628.14m_{c}) $$ dyn cm-1 (g s-2)
+
+Where sigma~w/a~ is the surface tension of liquid water and m~c~ is the molality of carbon dissolved in water (mol C k-1)
+
+$$ \sigma_{w/a} = 76.1 - 1.55 * (T - 273.15) $$
+
+When 0 < T-273.15 < 40 
+
+```{r}
+sigpfunc1 <- function(tempe, mc){
+  # dyn cm -1, g s-2
+  sigwa <- 76.1 - 1.55 * (tempe - 273.15)
+  answ <- sigwa - .0187 * tempe * log(1 + 628.14*mc)
+  print(answ)
+}
+
+```
+
+```{r part a}
+ra1 <- .1 * .0001 #converting radius to cm (cm)
+tm <- 298.15 #k
+ptsz <- .1 #um particle radius
+molC <- .05 #mol kg -1
+molW <- 18.015 # g mol-1 molecular weight of water
+molv1 <- 120 #g mol -1, molecular weight of compound
+den_assumed <- 1 #g / cm^3 molecular density of compound
+den_water <- 2 #g/ cm^3 molecular density of water
+ivv <- 1 #degree of dissociation, 1 for nondissociated organic compound
+
+mss <- Massp(radius = ra1, pv = den_assumed)
+
+siga <- sigpfunc1(tempe = tm, mc = molC)
+
+ap1 <- afunc(sigp = siga, Temp = tm, mp = molW, rhopi = den_assumed) #cm
+bp1 <- bfunc(mv = molW, iv = ivv, Ms = mss, rhow = den_water, ms = molv1) #cm^3
+
+rcrit_a <- critr(a = ap1, b = bp1) 
+scrit_a <- critss(a = ap1, b = bp1)
+```
+
+The critical r for compound a is `r rcrit_a` cm, while the supersaturation ratio is `r scrit_a`.  It must be noted that water and compound density were assumed to be 2 and 1 g/cm^3.
+
+
+```{r part b}
+ra1 <- .1 * .0001 #converting radius to cm (cm)
+tm <- 298.15 #k
+ptsz <- .1 #um particle radius
+molC <- .05 #mol kg -1
+molW <- 18.015 #g mol -1
+molv2 <- 58.44 #g mol -1, molecular density of NaCl
+den_assumed <- 1 #g / cm^3
+den_water <- 2 #g/ cm^3
+ivv2 <- 2 #degree of dissociation, 2 for dissociated NaCl
+
+mss2 <- Massp(radius = ra1, pv = den_assumed)
+
+sigb <- sigpfunc1(tempe = tm, mc = molC)
+
+ap2 <- afunc(sigp = sigb, Temp = tm, mp = molW, rhopi = den_assumed) #cm
+bp2 <- bfunc(mv = molW, iv = ivv2, Ms = mss, rhow = den_water, ms = molv2) #cm^3
+
+rcrit_b <- critr(a = ap2, b = bp2) 
+scrit_b <- critss(a = ap2, b = bp2)
+```
+
+The critical r for compound b is `r rcrit_b` cm, while the supersaturation ratio is `r scrit_b`.  It must be noted that water and compound density were assumed to be 2 and 1 g/cm^3.
+
+The critical radii are less than the particle radius,  so they will not grow to the CCN unless the critical supersaturation exceeds the ambient saturation ratio.  
+
